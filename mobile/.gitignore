@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+.yarn/
 
 # Expo
 .expo/
@@ -9,7 +10,9 @@ dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# Native - generated folders
+/ios
+/android
 .kotlin/
 *.orig.*
 *.jks
@@ -29,13 +32,47 @@ yarn-error.*
 # macOS
 .DS_Store
 *.pem
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
 
 # local env files
-.env*.local
+.env
+.env.local
+.env.*.local
 
 # typescript
 *.tsbuildinfo
 
-# generated native folders
-/ios
-/android
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.jest/
+
+# Build artifacts
+*.log
+logs/
+build/
+tmp/
+temp/
+
+# Watchman
+.watchmanconfig
+
+# Bundle artifacts
+*.bundle
+
+# CocoaPods
+Pods/
+
+# Backup folder
+../mobile_old/
