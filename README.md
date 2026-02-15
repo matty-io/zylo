@@ -32,21 +32,39 @@ Zylo/
 ### Prerequisites
 - Docker & Docker Compose
 - Java 21 (for local backend dev)
-- Node.js 18+ (for mobile dev)
+- Node.js 20+ (for mobile dev)
 
-### 1. Start Infrastructure
+### 1. Setup Environment
 
 ```bash
-# Start PostgreSQL and Redis
-docker-compose up postgres redis -d
+# Copy environment file
+cp .env.example .env
+
+# Edit .env if needed (defaults work for local dev)
 ```
 
-### 2. Run Backend
+### 2. Start Infrastructure
+
+```bash
+# Start PostgreSQL and Redis only (recommended for local dev)
+docker-compose up postgres redis -d
+
+# Or start everything including backend
+docker-compose up -d
+
+# Check status
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+```
+
+### 3. Run Backend (Local Development)
 
 ```bash
 cd backend
 
-# Run with Maven
+# Run with Maven (hot-reload)
 ./mvnw spring-boot:run
 
 # Or build and run JAR
@@ -56,18 +74,40 @@ java -jar target/zylo-backend-1.0.0.jar
 
 API available at `http://localhost:8080`
 
-### 3. Run Mobile App
+### 4. Run Mobile App
 
 ```bash
 cd mobile
 npm install
 
-# iOS
-npx pod-install
-npm run ios
+# iOS (Expo)
+npx expo run:ios
 
-# Android
-npm run android
+# Android (Expo)
+npx expo run:android
+
+# Development server
+npx expo start
+```
+
+### Docker Commands
+
+```bash
+# Start services
+docker-compose up -d
+
+# Stop services
+docker-compose down
+
+# Stop and remove volumes (reset database)
+docker-compose down -v
+
+# Rebuild backend image
+docker-compose build backend
+
+# View logs
+docker-compose logs -f backend
+docker-compose logs -f postgres
 ```
 
 ## Configuration

@@ -5,31 +5,35 @@ services:
     image: postgres:15-alpine
     container_name: zylo-postgres
     environment:
-      POSTGRES_DB: zylo
-      POSTGRES_USER: zylo
-      POSTGRES_PASSWORD: zylo_dev
+      POSTGRES_DB: ${POSTGRES_DB:-zylo}
+      POSTGRES_USER: ${POSTGRES_USER:-zylo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zylo_dev}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U zylo -d zylo"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zylo} -d ${POSTGRES_DB:-zylo}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
     container_name: zylo-redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
+    command: redis-server --appendonly yes
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   backend:
     build:
@@ -37,30 +41,39 @@ services:
       dockerfile: Dockerfile
     container_name: zylo-backend
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-      DATABASE_URL: jdbc:postgresql://postgres:5432/zylo
-      DATABASE_USERNAME: zylo
-      DATABASE_PASSWORD: zylo_dev
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-zylo}
+      DATABASE_USERNAME: ${POSTGRES_USER:-zylo}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-zylo_dev}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET: dev-secret-key-must-be-at-least-32-characters-long
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key-must-be-at-least-32-characters-long}
+      TWILIO_ENABLED: ${TWILIO_ENABLED:-false}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_VERIFY_SERVICE_SID: ${TWILIO_VERIFY_SERVICE_SID:-}
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 60s
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+    driver: local
   redis_data:
+    driver: local
 
 networks:
   default:

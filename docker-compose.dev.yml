@@ -1,0 +1,21 @@
+# Development override - run with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# Or just use: docker-compose up (for DB + Redis only, run backend locally)
+
+version: '3.8'
+
+services:
+  # Only run postgres and redis for local development
+  # Backend runs locally with hot-reload via IDE
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  # Disable backend container for local development
+  backend:
+    profiles:
+      - full  # Only runs with: docker-compose --profile full up
