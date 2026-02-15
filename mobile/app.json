@@ -12,9 +12,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#6366F1"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.zylo.app"
@@ -32,9 +29,6 @@
     },
     "plugins": [
       "expo-router"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    ]
   }
 }
