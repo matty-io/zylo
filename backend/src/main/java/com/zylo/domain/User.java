@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,8 +35,9 @@ public class User {
     private String city;
 
     @Column(name = "preferred_sports", columnDefinition = "TEXT[]")
-    @Convert(converter = StringArrayConverter.class)
-    private List<String> preferredSports;
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Builder.Default
+    private List<String> preferredSports = new ArrayList<>();
 
     @Column(name = "fcm_token", length = 500)
     private String fcmToken;

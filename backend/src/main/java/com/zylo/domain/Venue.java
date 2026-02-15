@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,19 +47,22 @@ public class Venue {
     private BigDecimal longitude;
 
     @Column(name = "supported_sports", columnDefinition = "TEXT[]")
-    @Convert(converter = StringArrayConverter.class)
-    private List<String> supportedSports;
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Builder.Default
+    private List<String> supportedSports = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT[]")
-    @Convert(converter = StringArrayConverter.class)
-    private List<String> images;
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Builder.Default
+    private List<String> images = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(columnDefinition = "TEXT[]")
-    @Convert(converter = StringArrayConverter.class)
-    private List<String> amenities;
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Builder.Default
+    private List<String> amenities = new ArrayList<>();
 
     @Column(name = "opening_time")
     @Builder.Default
