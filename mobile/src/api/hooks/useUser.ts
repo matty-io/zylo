@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient, { extractData } from '../client';
 import { useAuthStore } from '../../store/authStore';
-import { User } from '../../types';
+import { ApiResponse, User } from '../../types';
 
 export function useProfile() {
   const { isAuthenticated } = useAuthStore();
@@ -9,7 +9,7 @@ export function useProfile() {
   return useQuery({
     queryKey: ['user', 'profile'],
     queryFn: async () => {
-      const response = await apiClient.get<{ data: User }>('/users/me');
+      const response = await apiClient.get<ApiResponse<User>>('/users/me');
       return extractData(response);
     },
     enabled: isAuthenticated,
@@ -22,7 +22,7 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: async (data: { name?: string; city?: string; preferredSports?: string[] }) => {
-      const response = await apiClient.put<{ data: User }>('/users/me', data);
+      const response = await apiClient.put<ApiResponse<User>>('/users/me', data);
       return extractData(response);
     },
     onSuccess: (data) => {

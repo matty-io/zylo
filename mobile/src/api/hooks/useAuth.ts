@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import apiClient, { extractData } from '../client';
 import { useAuthStore } from '../../store/authStore';
-import { AuthResponse } from '../../types';
+import { ApiResponse, AuthResponse } from '../../types';
 
 export function useRequestOtp() {
   return useMutation({
@@ -17,7 +17,7 @@ export function useVerifyOtp() {
 
   return useMutation({
     mutationFn: async ({ phone, otp }: { phone: string; otp: string }) => {
-      const response = await apiClient.post<{ data: AuthResponse }>('/auth/otp/verify', {
+      const response = await apiClient.post<ApiResponse<AuthResponse>>('/auth/otp/verify', {
         phone,
         otp,
       });

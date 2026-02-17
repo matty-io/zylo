@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient, { extractData } from '../client';
-import { PaymentInitiateResponse } from '../../types';
+import { ApiResponse, PaymentInitiateResponse } from '../../types';
 
 export function useInitiatePayment() {
   return useMutation({
     mutationFn: async (bookingId: string) => {
-      const response = await apiClient.post<{ data: PaymentInitiateResponse }>(
+      const response = await apiClient.post<ApiResponse<PaymentInitiateResponse>>(
         `/payments/initiate?bookingId=${bookingId}`
       );
       return extractData(response);
@@ -26,7 +26,7 @@ export function useVerifyPayment() {
       paymentId: string;
       signature?: string;
     }) => {
-      const response = await apiClient.post<{ data: { success: boolean; bookingId: string } }>(
+      const response = await apiClient.post<ApiResponse<{ success: boolean; bookingId: string }>>(
         '/payments/verify',
         { orderId, paymentId, signature }
       );

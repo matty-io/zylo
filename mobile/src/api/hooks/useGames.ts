@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import apiClient, { extractData } from '../client';
-import { GameListItem, GameDetail, Page } from '../../types';
+import { ApiResponse, GameListItem, GameDetail, Page } from '../../types';
 
 interface GameFilters {
   sport?: string;
@@ -17,7 +17,7 @@ export function usePublicGames(filters?: GameFilters) {
       if (filters?.sport) params.append('sport', filters.sport);
       if (filters?.city) params.append('city', filters.city);
 
-      const response = await apiClient.get<{ data: Page<GameListItem> }>(
+      const response = await apiClient.get<ApiResponse<Page<GameListItem>>>(
         `/games?${params.toString()}`
       );
       return extractData(response);
@@ -31,7 +31,7 @@ export function useMyGames() {
   return useInfiniteQuery({
     queryKey: ['games', 'my'],
     queryFn: async ({ pageParam = 0 }) => {
-      const response = await apiClient.get<{ data: Page<GameListItem> }>(
+      const response = await apiClient.get<ApiResponse<Page<GameListItem>>>(
         `/games/my?page=${pageParam}&size=20`
       );
       return extractData(response);
@@ -45,7 +45,7 @@ export function useGameDetails(gameId: string) {
   return useQuery({
     queryKey: ['game', gameId],
     queryFn: async () => {
-      const response = await apiClient.get<{ data: GameDetail }>(`/games/${gameId}`);
+      const response = await apiClient.get<ApiResponse<GameDetail>>(`/games/${gameId}`);
       return extractData(response);
     },
     enabled: !!gameId,
@@ -64,7 +64,7 @@ export function useCreateGame() {
       description?: string;
       isPublic?: boolean;
     }) => {
-      const response = await apiClient.post<{ data: GameDetail }>('/games', data);
+      const response = await apiClient.post<ApiResponse<GameDetail>>('/games', data);
       return extractData(response);
     },
     onSuccess: () => {
@@ -78,7 +78,7 @@ export function useJoinGame() {
 
   return useMutation({
     mutationFn: async (gameId: string) => {
-      const response = await apiClient.post<{ data: GameDetail }>(`/games/${gameId}/join`);
+      const response = await apiClient.post<ApiResponse<GameDetail>>(`/games/${gameId}/join`);
       return extractData(response);
     },
     onSuccess: (_, gameId) => {
@@ -93,7 +93,7 @@ export function useLeaveGame() {
 
   return useMutation({
     mutationFn: async (gameId: string) => {
-      const response = await apiClient.post<{ data: GameDetail }>(`/games/${gameId}/leave`);
+      const response = await apiClient.post<ApiResponse<GameDetail>>(`/games/${gameId}/leave`);
       return extractData(response);
     },
     onSuccess: (_, gameId) => {

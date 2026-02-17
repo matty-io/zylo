@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import apiClient, { extractData } from '../client';
-import { Booking, Page } from '../../types';
+import { ApiResponse, Booking, Page } from '../../types';
 import { useBookingStore } from '../../store/bookingStore';
 
 export function useMyBookings() {
   return useInfiniteQuery({
     queryKey: ['bookings', 'my'],
     queryFn: async ({ pageParam = 0 }) => {
-      const response = await apiClient.get<{ data: Page<Booking> }>(
+      const response = await apiClient.get<ApiResponse<Page<Booking>>>(
         `/bookings?page=${pageParam}&size=20`
       );
       return extractData(response);
@@ -21,7 +21,7 @@ export function useBookingDetails(bookingId: string) {
   return useQuery({
     queryKey: ['booking', bookingId],
     queryFn: async () => {
-      const response = await apiClient.get<{ data: Booking }>(`/bookings/${bookingId}`);
+      const response = await apiClient.get<ApiResponse<Booking>>(`/bookings/${bookingId}`);
       return extractData(response);
     },
     enabled: !!bookingId,
@@ -34,7 +34,7 @@ export function useCreateBooking() {
 
   return useMutation({
     mutationFn: async ({ slotId, idempotencyKey }: { slotId: string; idempotencyKey: string }) => {
-      const response = await apiClient.post<{ data: Booking }>('/bookings', {
+      const response = await apiClient.post<ApiResponse<Booking>>('/bookings', {
         slotId,
         idempotencyKey,
       });
@@ -52,7 +52,7 @@ export function useCancelBooking() {
 
   return useMutation({
     mutationFn: async ({ bookingId, reason }: { bookingId: string; reason?: string }) => {
-      const response = await apiClient.post<{ data: Booking }>(`/bookings/${bookingId}/cancel`, {
+      const response = await apiClient.post<ApiResponse<Booking>>(`/bookings/${bookingId}/cancel`, {
         reason,
       });
       return extractData(response);
