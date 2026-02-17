@@ -1,10 +1,16 @@
-import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams, router } from 'expo-router';
-import { format, addDays, parseISO } from 'date-fns';
-import { useVenueDetails, useVenueSlots } from '../../src/api/hooks/useVenues';
-import { useBookingStore } from '../../src/store/bookingStore';
-import { Slot, SlotsByCourt } from '../../src/types';
+import { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import { useLocalSearchParams, router } from "expo-router";
+import { format, addDays, parseISO } from "date-fns";
+import { useVenueDetails, useVenueSlots } from "../../src/api/hooks/useVenues";
+import { useBookingStore } from "../../src/store/bookingStore";
+import { Slot, SlotsByCourt } from "../../src/types";
 
 function DateSelector({
   selectedDate,
@@ -16,10 +22,10 @@ function DateSelector({
   const dates = Array.from({ length: 7 }, (_, i) => {
     const date = addDays(new Date(), i);
     return {
-      date: format(date, 'yyyy-MM-dd'),
-      dayName: format(date, 'EEE'),
-      dayNumber: format(date, 'd'),
-      month: format(date, 'MMM'),
+      date: format(date, "yyyy-MM-dd"),
+      dayName: format(date, "EEE"),
+      dayNumber: format(date, "d"),
+      month: format(date, "MMM"),
     };
   });
 
@@ -37,23 +43,23 @@ function DateSelector({
             key={d.date}
             onPress={() => onDateSelect(d.date)}
             className={`w-16 py-3 rounded-xl items-center ${
-              isSelected ? 'bg-primary' : 'bg-white'
+              isSelected ? "bg-primary" : "bg-white"
             }`}
           >
             <Text
-              className={`text-xs ${isSelected ? 'text-white' : 'text-gray-500'}`}
+              className={`text-xs ${isSelected ? "text-white" : "text-gray-500"}`}
             >
               {d.dayName}
             </Text>
             <Text
               className={`text-xl font-bold ${
-                isSelected ? 'text-white' : 'text-gray-900'
+                isSelected ? "text-white" : "text-gray-900"
               }`}
             >
               {d.dayNumber}
             </Text>
             <Text
-              className={`text-xs ${isSelected ? 'text-white' : 'text-gray-500'}`}
+              className={`text-xs ${isSelected ? "text-white" : "text-gray-500"}`}
             >
               {d.month}
             </Text>
@@ -75,7 +81,7 @@ function SlotCard({
   isSelected: boolean;
   onSelect: () => void;
 }) {
-  const isAvailable = slot.available && slot.status === 'AVAILABLE';
+  const isAvailable = slot.available && slot.status === "AVAILABLE";
 
   return (
     <TouchableOpacity
@@ -83,19 +89,19 @@ function SlotCard({
       disabled={!isAvailable}
       className={`flex-1 min-w-[100px] p-3 rounded-lg mr-2 mb-2 ${
         isSelected
-          ? 'bg-primary'
+          ? "bg-primary"
           : isAvailable
-          ? 'bg-white border border-gray-200'
-          : 'bg-gray-100'
+            ? "bg-white border border-gray-200"
+            : "bg-gray-100"
       }`}
     >
       <Text
         className={`text-sm font-semibold ${
           isSelected
-            ? 'text-white'
+            ? "text-white"
             : isAvailable
-            ? 'text-gray-900'
-            : 'text-gray-400'
+              ? "text-gray-900"
+              : "text-gray-400"
         }`}
       >
         {slot.startTime.slice(0, 5)} - {slot.endTime.slice(0, 5)}
@@ -103,13 +109,13 @@ function SlotCard({
       <Text
         className={`text-xs mt-1 ${
           isSelected
-            ? 'text-indigo-200'
+            ? "text-indigo-200"
             : isAvailable
-            ? 'text-gray-500'
-            : 'text-gray-400'
+              ? "text-gray-500"
+              : "text-gray-400"
         }`}
       >
-        {isAvailable ? `Rs ${pricePerHour}` : 'Booked'}
+        {isAvailable ? `Rs ${pricePerHour}` : "Booked"}
       </Text>
     </TouchableOpacity>
   );
@@ -122,7 +128,12 @@ function CourtSection({
 }: {
   courtData: SlotsByCourt;
   selectedSlotId: string | null;
-  onSlotSelect: (slot: Slot, courtId: string, courtName: string, pricePerHour: number) => void;
+  onSlotSelect: (
+    slot: Slot,
+    courtId: string,
+    courtName: string,
+    pricePerHour: number,
+  ) => void;
 }) {
   return (
     <View className="bg-white rounded-xl p-4 mb-4">
@@ -145,7 +156,12 @@ function CourtSection({
             pricePerHour={courtData.pricePerHour}
             isSelected={selectedSlotId === slot.id}
             onSelect={() =>
-              onSlotSelect(slot, courtData.courtId, courtData.courtName, courtData.pricePerHour)
+              onSlotSelect(
+                slot,
+                courtData.courtId,
+                courtData.courtName,
+                courtData.pricePerHour,
+              )
             }
           />
         ))}
@@ -156,7 +172,9 @@ function CourtSection({
 
 export default function SlotSelectionScreen() {
   const { venueId } = useLocalSearchParams<{ venueId: string }>();
-  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [selectedDate, setSelectedDate] = useState(
+    format(new Date(), "yyyy-MM-dd"),
+  );
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [selectedCourtInfo, setSelectedCourtInfo] = useState<{
     courtId: string;
@@ -165,9 +183,17 @@ export default function SlotSelectionScreen() {
   } | null>(null);
 
   const { data: venue } = useVenueDetails(venueId!);
-  const { data: slotsByCourt, isLoading, refetch } = useVenueSlots(venueId!, selectedDate);
+  const {
+    data: slotsByCourt,
+    isLoading,
+    refetch,
+  } = useVenueSlots(venueId!, selectedDate);
 
-  const { setSelectedVenue, setSelectedSlot, setSelectedDate: setStoreDate } = useBookingStore();
+  const {
+    setSelectedVenue,
+    setSelectedSlot,
+    setSelectedDate: setStoreDate,
+  } = useBookingStore();
 
   useEffect(() => {
     if (venue) {
@@ -186,9 +212,9 @@ export default function SlotSelectionScreen() {
     slot: Slot,
     courtId: string,
     courtName: string,
-    pricePerHour: number
+    pricePerHour: number,
   ) => {
-    if (!slot.available || slot.status !== 'AVAILABLE') return;
+    if (!slot.available || slot.status !== "AVAILABLE") return;
     setSelectedSlotId(slot.id);
     setSelectedCourtInfo({ courtId, courtName, pricePerHour });
     setSelectedSlot(slot);
@@ -198,7 +224,7 @@ export default function SlotSelectionScreen() {
   const handleContinue = () => {
     if (!selectedSlotId || !selectedCourtInfo) return;
     router.push({
-      pathname: '/booking/confirm',
+      pathname: "/booking/confirm",
       params: {
         slotId: selectedSlotId,
         courtName: selectedCourtInfo.courtName,
@@ -212,14 +238,19 @@ export default function SlotSelectionScreen() {
     <View className="flex-1 bg-background">
       <View className="bg-white p-4 border-b border-gray-100">
         <Text className="text-xl font-bold text-gray-900">
-          {venue?.name ?? 'Select a Slot'}
+          {venue?.name ?? "Select a Slot"}
         </Text>
         {venue?.address && (
           <Text className="text-sm text-gray-500 mt-1">{venue.address}</Text>
         )}
       </View>
 
-      <DateSelector selectedDate={selectedDate} onDateSelect={handleDateSelect} />
+      <View className="h-25">
+        <DateSelector
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+        />
+      </View>
 
       <ScrollView className="flex-1 px-4">
         {isLoading ? (
@@ -229,7 +260,9 @@ export default function SlotSelectionScreen() {
           </View>
         ) : !slotsByCourt || slotsByCourt.length === 0 ? (
           <View className="flex-1 justify-center items-center py-20">
-            <Text className="text-gray-500">No slots available for this date</Text>
+            <Text className="text-gray-500">
+              No slots available for this date
+            </Text>
           </View>
         ) : (
           slotsByCourt.map((courtData) => (
