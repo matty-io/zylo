@@ -4,6 +4,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as SplashScreen from 'expo-splash-screen';
+import { verifyInstallation } from 'nativewind';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,6 +23,9 @@ const queryClient = new QueryClient({
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
+
+  // Verify NativeWind installation
+  verifyInstallation();
 
   useEffect(() => {
     // Give time for store rehydration
