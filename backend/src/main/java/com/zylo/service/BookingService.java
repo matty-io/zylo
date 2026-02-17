@@ -106,17 +106,24 @@ public class BookingService {
         slotRepository.save(slot);
 
         // Create booking
+        // In demo mode (skipPayment=true), auto-confirm booking without payment
+        boolean demoMode = appConfig.getBooking().isSkipPayment();
         Booking booking = Booking.builder()
             .user(user)
             .slot(slot)
             .idempotencyKey(request.getIdempotencyKey())
             .amount(slot.getCourt().getPricePerHour())
-            .status(Booking.BookingStatus.PENDING)
-            .paymentStatus(Booking.PaymentStatus.PENDING)
+            .status(demoMode ? Booking.BookingStatus.CONFIRMED : Booking.BookingStatus.PENDING)
+            .paymentStatus(demoMode ? Booking.PaymentStatus.SUCCESS : Booking.PaymentStatus.PENDING)
             .build();
 
         booking = bookingRepository.save(booking);
-        log.info("Booking created: {} for slot: {} by user: {}", booking.getId(), slot.getId(), user.getId());
+        log.info("Booking created: {} for slot: {} by user: {} (demo mode: {})",
+            booking.getId(), slot.getId(), user.getId(), demoMode);
+
+        if (demoMode) {
+            notificationService.sendBookingConfirmedNotification(booking);
+        }
 
         return BookingResponseDto.fromEntity(booking);
     }

@@ -23,6 +23,7 @@ public class AppConfig {
     public static class BookingConfig {
         private int lockTimeoutSeconds = 30;
         private int pendingExpiryMinutes = 10;
+        private boolean skipPayment = false; // Demo mode: auto-confirm bookings without payment
     }
 
     @Data

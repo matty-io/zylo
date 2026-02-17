@@ -75,6 +75,7 @@ app:
   booking:
     lock-timeout-seconds: 30
     pending-expiry-minutes: 10
+    skip-payment: true  # Demo mode: auto-confirm bookings without payment
   slots:
     duration-minutes: 60
     start-hour: 6
