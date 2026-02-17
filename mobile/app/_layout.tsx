@@ -1,10 +1,9 @@
 import "../global.css";
-import { useEffect, useState } from 'react';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import * as SplashScreen from 'expo-splash-screen';
-import { verifyInstallation } from 'nativewind';
+import { useEffect, useState } from "react";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,9 +22,6 @@ const queryClient = new QueryClient({
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
-
-  // Verify NativeWind installation
-  verifyInstallation();
 
   useEffect(() => {
     // Give time for store rehydration
@@ -47,12 +43,30 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="auth" />
-        <Stack.Screen name="venue/[id]" options={{ headerShown: true, title: 'Venue' }} />
-        <Stack.Screen name="booking/slots" options={{ headerShown: true, title: 'Select Slot' }} />
-        <Stack.Screen name="booking/confirm" options={{ headerShown: true, title: 'Confirm Booking' }} />
-        <Stack.Screen name="booking/success" options={{ headerShown: true, title: 'Booking Confirmed' }} />
-        <Stack.Screen name="game/[id]" options={{ headerShown: true, title: 'Game Details' }} />
-        <Stack.Screen name="game/create" options={{ headerShown: true, title: 'Create Game' }} />
+        <Stack.Screen
+          name="venue/[id]"
+          options={{ headerShown: true, title: "Venue" }}
+        />
+        <Stack.Screen
+          name="booking/slots"
+          options={{ headerShown: true, title: "Select Slot" }}
+        />
+        <Stack.Screen
+          name="booking/confirm"
+          options={{ headerShown: true, title: "Confirm Booking" }}
+        />
+        <Stack.Screen
+          name="booking/success"
+          options={{ headerShown: true, title: "Booking Confirmed" }}
+        />
+        <Stack.Screen
+          name="game/[id]"
+          options={{ headerShown: true, title: "Game Details" }}
+        />
+        <Stack.Screen
+          name="game/create"
+          options={{ headerShown: true, title: "Create Game" }}
+        />
       </Stack>
     </QueryClientProvider>
   );
