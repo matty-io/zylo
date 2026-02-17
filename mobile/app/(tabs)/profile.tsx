@@ -1,12 +1,14 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { useAuthStore } from '../../src/store/authStore';
+
+const MENU_ITEMS = [
+  'Edit Profile',
+  'My Bookings',
+  'Notifications',
+  'Help & Support',
+  'Privacy Policy',
+];
 
 export default function ProfileScreen() {
   const user = useAuthStore((state) => state.user);
@@ -18,103 +20,31 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
+    <ScrollView className="flex-1 bg-background">
+      <View className="items-center p-8 bg-white">
+        <View className="w-20 h-20 rounded-full bg-primary justify-center items-center mb-4">
+          <Text className="text-3xl font-semibold text-white">
             {user?.name?.charAt(0)?.toUpperCase() || 'U'}
           </Text>
         </View>
-        <Text style={styles.name}>{user?.name || 'User'}</Text>
-        <Text style={styles.phone}>{user?.phone}</Text>
+        <Text className="text-xl font-semibold text-gray-900 mb-1">{user?.name || 'User'}</Text>
+        <Text className="text-sm text-gray-500">{user?.phone}</Text>
       </View>
 
-      <View style={styles.section}>
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>Edit Profile</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>My Bookings</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>Notifications</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>Help & Support</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>Privacy Policy</Text>
-        </TouchableOpacity>
+      <View className="bg-white mt-4">
+        {MENU_ITEMS.map((item) => (
+          <TouchableOpacity key={item} className="p-4 border-b border-gray-100">
+            <Text className="text-base text-gray-900">{item}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
+      <TouchableOpacity
+        className="m-4 p-4 bg-red-50 rounded-xl items-center"
+        onPress={handleLogout}
+      >
+        <Text className="text-base font-semibold text-error">Logout</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
-  header: {
-    alignItems: 'center',
-    padding: 32,
-    backgroundColor: '#FFFFFF',
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#6366F1',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  avatarText: {
-    fontSize: 32,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  phone: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  section: {
-    backgroundColor: '#FFFFFF',
-    marginTop: 16,
-  },
-  menuItem: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
-  },
-  menuText: {
-    fontSize: 16,
-    color: '#111827',
-  },
-  logoutButton: {
-    margin: 16,
-    padding: 16,
-    backgroundColor: '#FEE2E2',
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  logoutText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#DC2626',
-  },
-});

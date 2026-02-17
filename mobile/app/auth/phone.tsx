@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   Alert,
@@ -34,17 +33,17 @@ export default function PhoneInputScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      className="flex-1 bg-white"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={styles.content}>
-        <Text style={styles.title}>Welcome to Zylo</Text>
-        <Text style={styles.subtitle}>Book courts. Create games. Play together.</Text>
+      <View className="flex-1 px-6 justify-center">
+        <Text className="text-3xl font-bold text-gray-900 mb-2">Welcome to Zylo</Text>
+        <Text className="text-base text-gray-500 mb-12">Book courts. Create games. Play together.</Text>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Phone Number</Text>
+        <View className="mb-6">
+          <Text className="text-sm font-medium text-gray-700 mb-2">Phone Number</Text>
           <TextInput
-            style={styles.input}
+            className="border border-gray-300 rounded-xl px-4 py-3.5 text-lg text-gray-900"
             value={phone}
             onChangeText={setPhone}
             placeholder="+91 99999 99999"
@@ -55,79 +54,19 @@ export default function PhoneInputScreen() {
         </View>
 
         <TouchableOpacity
-          style={[styles.button, isPending && styles.buttonDisabled]}
+          className={`rounded-xl py-4 items-center ${isPending ? 'bg-indigo-300' : 'bg-primary'}`}
           onPress={handleContinue}
           disabled={isPending}
         >
-          <Text style={styles.buttonText}>{isPending ? 'Sending...' : 'Continue'}</Text>
+          <Text className="text-white text-base font-semibold">
+            {isPending ? 'Sending...' : 'Continue'}
+          </Text>
         </TouchableOpacity>
 
-        <Text style={styles.terms}>
+        <Text className="mt-6 text-xs text-gray-400 text-center leading-5">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </Text>
       </View>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 48,
-  },
-  inputContainer: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 18,
-    color: '#111827',
-  },
-  button: {
-    backgroundColor: '#6366F1',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    backgroundColor: '#A5B4FC',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  terms: {
-    marginTop: 24,
-    fontSize: 12,
-    color: '#9CA3AF',
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-});

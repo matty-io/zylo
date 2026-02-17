@@ -4,7 +4,6 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  StyleSheet,
   Image,
   TextInput,
   RefreshControl,
@@ -27,28 +26,28 @@ export default function HomeScreen() {
 
   const renderVenueCard = ({ item }: { item: VenueListItem }) => (
     <TouchableOpacity
-      style={styles.venueCard}
+      className="bg-white rounded-2xl mb-4 overflow-hidden shadow-sm"
       onPress={() => router.push(`/venue/${item.id}`)}
     >
       <Image
         source={{ uri: item.primaryImage || 'https://via.placeholder.com/300x200' }}
-        style={styles.venueImage}
+        className="w-full h-40 bg-gray-200"
       />
-      <View style={styles.venueInfo}>
-        <Text style={styles.venueName}>{item.name}</Text>
-        <Text style={styles.venueAddress} numberOfLines={1}>
+      <View className="p-4">
+        <Text className="text-lg font-semibold text-gray-900 mb-1">{item.name}</Text>
+        <Text className="text-sm text-gray-500 mb-3" numberOfLines={1}>
           {item.address}
         </Text>
-        <View style={styles.venueFooter}>
-          <View style={styles.sportTags}>
+        <View className="flex-row justify-between items-center">
+          <View className="flex-row gap-2">
             {item.supportedSports?.slice(0, 2).map((sport) => (
-              <View key={sport} style={styles.sportTag}>
-                <Text style={styles.sportTagText}>{sport}</Text>
+              <View key={sport} className="bg-indigo-50 px-2.5 py-1 rounded-xl">
+                <Text className="text-xs text-primary font-medium">{sport}</Text>
               </View>
             ))}
           </View>
           {item.minPrice && (
-            <Text style={styles.price}>From ₹{item.minPrice}/hr</Text>
+            <Text className="text-sm font-semibold text-success">From ₹{item.minPrice}/hr</Text>
           )}
         </View>
       </View>
@@ -56,10 +55,10 @@ export default function HomeScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
+    <View className="flex-1 bg-background">
+      <View className="p-4 bg-white">
         <TextInput
-          style={styles.searchInput}
+          className="bg-gray-100 rounded-xl px-4 py-3 text-base"
           placeholder="Search venues..."
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -72,20 +71,21 @@ export default function HomeScreen() {
         keyExtractor={(item) => item}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={[styles.sportFilter, selectedSport === item && styles.sportFilterActive]}
+            className={`px-4 py-2 rounded-full mr-2 ${
+              selectedSport === item ? 'bg-primary' : 'bg-gray-100'
+            }`}
             onPress={() => setSelectedSport(item)}
           >
             <Text
-              style={[
-                styles.sportFilterText,
-                selectedSport === item && styles.sportFilterTextActive,
-              ]}
+              className={`text-sm font-medium ${
+                selectedSport === item ? 'text-white' : 'text-gray-500'
+              }`}
             >
               {item}
             </Text>
           </TouchableOpacity>
         )}
-        style={styles.sportFilters}
+        className="px-4 py-3 bg-white max-h-14"
         showsHorizontalScrollIndicator={false}
       />
 
@@ -93,19 +93,19 @@ export default function HomeScreen() {
         data={venues}
         keyExtractor={(item) => item.id}
         renderItem={renderVenueCard}
-        contentContainerStyle={styles.venueList}
+        contentContainerClassName="p-4"
         refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} />}
         onEndReached={() => hasNextPage && fetchNextPage()}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
           isFetchingNextPage ? (
-            <Text style={styles.loadingMore}>Loading more...</Text>
+            <Text className="text-center p-4 text-gray-500">Loading more...</Text>
           ) : null
         }
         ListEmptyComponent={
           !isLoading ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>No venues found</Text>
+            <View className="p-12 items-center">
+              <Text className="text-base text-gray-400">No venues found</Text>
             </View>
           ) : null
         }
@@ -113,116 +113,3 @@ export default function HomeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
-  searchContainer: {
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-  },
-  searchInput: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-  },
-  sportFilters: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    maxHeight: 56,
-  },
-  sportFilter: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#F3F4F6',
-    marginRight: 8,
-  },
-  sportFilterActive: {
-    backgroundColor: '#6366F1',
-  },
-  sportFilterText: {
-    fontSize: 14,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  sportFilterTextActive: {
-    color: '#FFFFFF',
-  },
-  venueList: {
-    padding: 16,
-  },
-  venueCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginBottom: 16,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  venueImage: {
-    width: '100%',
-    height: 160,
-    backgroundColor: '#E5E7EB',
-  },
-  venueInfo: {
-    padding: 16,
-  },
-  venueName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  venueAddress: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 12,
-  },
-  venueFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sportTags: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  sportTag: {
-    backgroundColor: '#EEF2FF',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  sportTagText: {
-    fontSize: 12,
-    color: '#6366F1',
-    fontWeight: '500',
-  },
-  price: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#059669',
-  },
-  loadingMore: {
-    textAlign: 'center',
-    padding: 16,
-    color: '#6B7280',
-  },
-  emptyState: {
-    padding: 48,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#9CA3AF',
-  },
-});

@@ -1,27 +1,14 @@
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import { router } from 'expo-router';
 import { useMyBookings } from '../../src/api/hooks/useBookings';
 import { Booking } from '../../src/types';
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'CONFIRMED':
-      return { bg: '#D1FAE5', text: '#065F46' };
-    case 'PENDING':
-      return { bg: '#FEF3C7', text: '#92400E' };
-    case 'CANCELLED':
-      return { bg: '#FEE2E2', text: '#991B1B' };
-    default:
-      return { bg: '#F3F4F6', text: '#6B7280' };
-  }
-};
+const STATUS_STYLES = {
+  CONFIRMED: 'bg-green-100 text-green-800',
+  PENDING: 'bg-amber-100 text-amber-800',
+  CANCELLED: 'bg-red-100 text-red-800',
+  DEFAULT: 'bg-gray-100 text-gray-500',
+} as const;
 
 export default function BookingsScreen() {
   const { data, isLoading, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } =
@@ -30,36 +17,37 @@ export default function BookingsScreen() {
   const bookings = data?.pages.flatMap((page) => page.content) ?? [];
 
   const renderBookingCard = ({ item }: { item: Booking }) => {
-    const statusColor = getStatusColor(item.status);
+    const statusStyle = STATUS_STYLES[item.status as keyof typeof STATUS_STYLES] || STATUS_STYLES.DEFAULT;
+    const [bgColor, textColor] = statusStyle.split(' ');
 
     return (
       <TouchableOpacity
-        style={styles.card}
+        className="bg-white rounded-2xl p-4 mb-3 shadow-sm"
         onPress={() => router.push(`/booking/${item.id}`)}
       >
-        <View style={styles.cardHeader}>
-          <Text style={styles.venueName}>{item.venueName}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: statusColor.bg }]}>
-            <Text style={[styles.statusText, { color: statusColor.text }]}>{item.status}</Text>
+        <View className="flex-row justify-between items-center mb-2">
+          <Text className="text-base font-semibold text-gray-900 flex-1">{item.venueName}</Text>
+          <View className={`px-2.5 py-1 rounded-xl ${bgColor}`}>
+            <Text className={`text-xs font-semibold ${textColor}`}>{item.status}</Text>
           </View>
         </View>
 
-        <Text style={styles.courtName}>{item.courtName}</Text>
+        <Text className="text-sm text-gray-500 mb-4">{item.courtName}</Text>
 
-        <View style={styles.cardFooter}>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Date</Text>
-            <Text style={styles.detailValue}>{item.date}</Text>
+        <View className="flex-row justify-between">
+          <View className="items-center">
+            <Text className="text-xs text-gray-400 mb-1">Date</Text>
+            <Text className="text-sm font-medium text-gray-900">{item.date}</Text>
           </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Time</Text>
-            <Text style={styles.detailValue}>
+          <View className="items-center">
+            <Text className="text-xs text-gray-400 mb-1">Time</Text>
+            <Text className="text-sm font-medium text-gray-900">
               {item.startTime?.slice(0, 5)} - {item.endTime?.slice(0, 5)}
             </Text>
           </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Amount</Text>
-            <Text style={styles.detailValue}>₹{item.amount}</Text>
+          <View className="items-center">
+            <Text className="text-xs text-gray-400 mb-1">Amount</Text>
+            <Text className="text-sm font-medium text-gray-900">₹{item.amount}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -67,23 +55,23 @@ export default function BookingsScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 bg-background">
       <FlatList
         data={bookings}
         keyExtractor={(item) => item.id}
         renderItem={renderBookingCard}
-        contentContainerStyle={styles.list}
+        contentContainerClassName="p-4"
         refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} />}
         onEndReached={() => hasNextPage && fetchNextPage()}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
-          isFetchingNextPage ? <Text style={styles.loadingMore}>Loading more...</Text> : null
+          isFetchingNextPage ? <Text className="text-center p-4 text-gray-500">Loading more...</Text> : null
         }
         ListEmptyComponent={
           !isLoading ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyTitle}>No bookings yet</Text>
-              <Text style={styles.emptyText}>Book a court to get started!</Text>
+            <View className="p-12 items-center">
+              <Text className="text-lg font-semibold text-gray-900 mb-2">No bookings yet</Text>
+              <Text className="text-sm text-gray-500">Book a court to get started!</Text>
             </View>
           ) : null
         }
@@ -91,86 +79,3 @@ export default function BookingsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
-  list: {
-    padding: 16,
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  venueName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-    flex: 1,
-  },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  courtName: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 16,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  detailItem: {
-    alignItems: 'center',
-  },
-  detailLabel: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    marginBottom: 4,
-  },
-  detailValue: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#111827',
-  },
-  loadingMore: {
-    textAlign: 'center',
-    padding: 16,
-    color: '#6B7280',
-  },
-  emptyState: {
-    padding: 48,
-    alignItems: 'center',
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-});

@@ -1,115 +1,51 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
+import { useVenueDetails } from '../../src/api/hooks/useVenues';
 
 export default function VenueDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-
-  // TODO: Fetch venue details using the id
-  const isLoading = false;
-  const venue = {
-    id,
-    name: 'Sports Arena',
-    address: '123 Main Street',
-    supportedSports: ['BADMINTON', 'TENNIS'],
-  };
+  const { data: venue, isLoading } = useVenueDetails(id!);
 
   if (isLoading) {
     return (
-      <View style={styles.loading}>
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#6366F1" />
       </View>
     );
   }
 
+  if (!venue) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-gray-500">Venue not found</Text>
+      </View>
+    );
+  }
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.name}>{venue.name}</Text>
-        <Text style={styles.address}>{venue.address}</Text>
+    <ScrollView className="flex-1 bg-background">
+      <View className="bg-white p-4">
+        <Text className="text-2xl font-bold text-gray-900 mb-2">{venue.name}</Text>
+        <Text className="text-sm text-gray-500">{venue.address}</Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Sports Available</Text>
-        <View style={styles.sportTags}>
-          {venue.supportedSports.map((sport) => (
-            <View key={sport} style={styles.sportTag}>
-              <Text style={styles.sportTagText}>{sport}</Text>
+      <View className="bg-white p-4 mt-4">
+        <Text className="text-base font-semibold text-gray-900 mb-3">Sports Available</Text>
+        <View className="flex-row flex-wrap gap-2">
+          {venue.supportedSports?.map((sport) => (
+            <View key={sport} className="bg-indigo-50 px-3 py-1.5 rounded-2xl">
+              <Text className="text-sm text-primary font-medium">{sport}</Text>
             </View>
           ))}
         </View>
       </View>
 
       <TouchableOpacity
-        style={styles.bookButton}
+        className="bg-primary m-4 p-4 rounded-xl items-center"
         onPress={() => router.push({ pathname: '/booking/slots', params: { venueId: id } })}
       >
-        <Text style={styles.bookButtonText}>Book Now</Text>
+        <Text className="text-white text-base font-semibold">Book Now</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  address: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  section: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    marginTop: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 12,
-  },
-  sportTags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  sportTag: {
-    backgroundColor: '#EEF2FF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  sportTagText: {
-    fontSize: 14,
-    color: '#6366F1',
-    fontWeight: '500',
-  },
-  bookButton: {
-    backgroundColor: '#6366F1',
-    margin: 16,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  bookButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
